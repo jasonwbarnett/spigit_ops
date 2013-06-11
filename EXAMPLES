@@ -1,0 +1,17 @@
+require 'spigit_ops/spigit_conf'
+
+spigit_conf = SpigitOps::SpigitConf.new('/opt/webapps/mywa/spigit-conf.xml')
+
+spigit_conf.update_av_settings
+
+spigit_conf.save!
+
+spigit_conf.av_ext?
+
+spigit_conf.av_add_ext ".txt"
+
+
+
+citi = SpigitOps.new("citibank")
+
+citi.create_snapshot
