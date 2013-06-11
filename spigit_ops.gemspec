@@ -6,10 +6,10 @@ require 'spigit_ops/version'
 Gem::Specification.new do |spec|
   spec.name          = "spigit_ops"
   spec.version       = SpigitOps::VERSION
-  spec.authors       = ["TODO: Write your name"]
-  spec.email         = ["TODO: Write your email address"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.authors       = ["Jason Barnett", "Bob Santos"]
+  spec.email         = ["J@sonBarnett.com", "bob.santos@spigit.com"]
+  spec.description   = %q{This gem does this and that.}
+  spec.summary       = %q{Want to manage Spigit? Grab this gem.}
   spec.homepage      = "http://www.spigit.com/"
   spec.license       = "MIT"
 
