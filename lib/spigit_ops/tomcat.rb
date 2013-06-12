@@ -6,11 +6,9 @@ module SpigitOps
       @serverxml_filename = serverxml_filename
 
       if ! FileTest.exist? @serverxml_filename
-  			$stderr.puts "#{@serverxml_filename} doesn't exist, exiting..."
-  			return
+  			raise "#{@serverxml_filename} doesn't exist."
 			elsif ! FileTest.readable? @serverxml_filename
-  			$stderr.puts "#{@serverxml_filename} isn't readable, exiting..."
-  			return
+        raise "#{@serverxml_filename} isn't readable."
 	  	end
 
 	  	@serverxml_xml = Nokogiri::XML(File.open(@serverxml_filename))
@@ -29,7 +27,7 @@ module SpigitOps
 
     end
 
-    def service(name)
+    def grab_service(name)
       puts @tomcat_services[name]
     end
 
