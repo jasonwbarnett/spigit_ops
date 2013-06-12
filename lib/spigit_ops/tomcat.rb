@@ -7,10 +7,10 @@ module SpigitOps
 
       if ! FileTest.exist? @serverxml_filename
   			$stderr.puts "#{@serverxml_filename} doesn't exist, exiting..."
-  			exit
+  			return
 			elsif ! FileTest.readable? @serverxml_filename
   			$stderr.puts "#{@serverxml_filename} isn't readable, exiting..."
-  			exit
+  			return
 	  	end
 
 	  	@serverxml_xml = Nokogiri::XML(File.open(@serverxml_filename))
@@ -21,6 +21,14 @@ module SpigitOps
 	  	puts @tomcat_services
 	  end
 
+    def count
+      puts @tomcat_services.length
+    end
+
+    def exist?(service)
+
+    end
+
     def service(name)
       puts @tomcat_services[name]
     end
@@ -29,8 +37,18 @@ module SpigitOps
       puts @serverxml_filename
     end
 
-    def save!(output_filename = SpigitOps::TC_SERVICES_FILE)
-      File.open(output_filename, 'w') { |f| @tomcat_services.each { |key, value| f.puts value } }
+    def save!(output_filename = SpigitOps::TC_SERVICES_FILE, options = {})
+      format = options[:format]
+
+      if format == 'old'
+        File.open(output_filename, 'w') { |f| @old_tomcat_services.each { |x| f.puts x } }
+      else
+        File.open(output_filename, 'w') { |f| @tomcat_services.each { |key, value| f.puts value } }
+      end
+    end
+
+    def save_old!(output_filename = SpigitOps::TC_SERVICES_FILE)
+      self.save!(output_filename, format: 'old')
     end
 
 	  private
@@ -54,7 +72,10 @@ module SpigitOps
 
     	def build_tomcat_services
         build_service_end_line_lookup
-        @tomcat_services = {}
+        @tomcat_services       = {}
+        @old_tomcat_services   = []
+
+        ## Loop to grab all information from the server.xml
     		@serverxml_xml.xpath('//Service').each do |service|
     		  name = service[:name]
     		  start_line = service.line
@@ -79,7 +100,9 @@ module SpigitOps
 
     		    if resources.empty?
     		      resources << {:db_host => db_host, :schema_name => schema_name}
+              resources << {:db_host => db_host, :schema_name => "#{schema_name}user"}
     		    else
+              ## This checks to see if the result 
     		      duplicate=""
     		      resources.each do |i|
     		        if i[:db_host] == db_host and i[:schema_name] == schema_name
@@ -92,11 +115,37 @@ module SpigitOps
     		    end
     		  end
 
-   		    serviceDefintion = {:start_line => start_line, :end_line => end_line, :name => name, :connectors => connectors.uniq, :docBases => docBase.uniq, :resources => resources}
-   		    @tomcat_services[name] = serviceDefintion
-    		end
+          ## This finishes things up and creates a hash for all tomcat services
+          serviceDefintion = {:start_line => start_line, :end_line => end_line, :name => name, :connectors => connectors.uniq, :docBases => docBase.uniq, :resources => resources}
+          @tomcat_services[name] = serviceDefintion
 
-        @tomcat_services
-    	end
+                  ## This is all for the OLD/ORIGINAL output ##
+                  # Create schemas array for all schema names, then add NAMEuser schema.
+                  old_schemas = resources.inject([]) do |result, resource|
+                    result << resource[:schema_name]
+                    result
+                  end
+
+                  # Create dbhost variable and check some stuff out
+                  old_db_hosts = resources.inject([]) do |result, resource|
+                    result << resource[:db_host]
+                    result
+                  end.uniq
+                  if old_db_hosts.count > 1
+                    puts "WARNING: We found miltiple hosts for the schema's, exiting..."
+                    exit 1
+                  end
+
+                  # Create ips array for all ip addresses
+                  old_ips = connectors.inject([]) do |result, connector|
+                    result << connector[:ip]
+                    result
+                  end
+                  old_serviceDefintion = "#{start_line},#{end_line}:#{old_ips.uniq.join(',')}:#{docBase.uniq.join(',')}:#{old_db_hosts.join(',')}:#{old_schemas.join(',')}:#{name}"
+                  @old_tomcat_services << old_serviceDefintion
+                  ## This is all for the OLD/ORIGINAL output ##
+        end
+      @tomcat_services
+    end
 	end
 end
