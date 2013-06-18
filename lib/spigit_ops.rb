@@ -1,6 +1,7 @@
 require "spigit_ops/version"
 require "spigit_ops/tomcat"
 require "spigit_ops/spigit_conf"
+require "spigit_ops/utils"
 
 module SpigitOps
 	TCS_START = 0
