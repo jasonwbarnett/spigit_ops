@@ -93,14 +93,14 @@ module SpigitOps
 
     		  resources = []
     		  service.children.css('Resource').each do |resource|
-    		    db_host     = resource[:url].scan(%r{mysql://(.*)/}).join.sub(/^127\.0\.0\.1$/, "localhost")
-    		    schema_name = resource[:url].scan(%r{/([^/]+)\?}).join
+    		    db_host     = resource[:url].scan(%r{mysql://(.*)/}).join.sub(/^127\.0\.0\.1$/, "localhost") if String === resource[:url]
+    		    schema_name = resource[:url].scan(%r{/([^/]+)\?}).join if String === resource[:url]
 
     		    if resources.empty?
-    		      resources << {:db_host => db_host, :schema_name => schema_name}
-              resources << {:db_host => db_host, :schema_name => "#{schema_name}user"}
+    		      resources << {:db_host => db_host, :schema_name => schema_name} if db_host and schema_name
+              resources << {:db_host => db_host, :schema_name => "#{schema_name}user"} if resources.length > 0
     		    else
-              ## This checks to see if the result 
+              ## This checks to see if the result
     		      duplicate=""
     		      resources.each do |i|
     		        if i[:db_host] == db_host and i[:schema_name] == schema_name
