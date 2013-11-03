@@ -41,10 +41,17 @@ module SpigitOps
 
     	content_type  = type.has_key?(format.to_sym) ? type[format.to_sym] : type["text"]
 
+      if Array === to
+        to_header = to.join(', ')
+      elsif String === to
+        to_header = to
+      else
+        to_header = to
+      end
 
 message = <<MESSAGE_END
 From: #{from}
-To: #{to}
+To: #{to_header}
 Subject: #{subject}
 Mime-Version: 1.0
 Content-Type: #{content_type}
