@@ -5,7 +5,7 @@ module SpigitOps
 
     def self.win_to_unix(time)
       begin
-      	time.to_i if String === time
+      	time = time.to_i if String === time
         windows_time = time
         unix_time    = windows_time / 10000000 - 11644473600
 
@@ -17,7 +17,7 @@ module SpigitOps
 
     def self.unix_to_win(time)
       begin
-      	time.to_i if String === time
+      	time = time.to_i if String === time
         unix_time    = time
         windows_time = (unix_time + 11644473600) * 10000000
 
