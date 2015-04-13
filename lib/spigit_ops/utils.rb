@@ -33,8 +33,8 @@ module SpigitOps
 
       host    = options[:host]    ? options[:host]    : "localhost"
 
-    	from    = options[:from]    ? options[:from]    : "operations-team@spigit.com"
-    	to      = options[:to]      ? options[:to]      : "operations-team@spigit.com"
+    	from    = options[:from]    ? options[:from]    : "techops-team@mindjet.com"
+    	to      = options[:to]      ? options[:to]      : "techops-team@mindjet.com"
     	subject = options[:subject] ? options[:subject] : raise("Must declare a subject for email")
     	message = options[:message] ? options[:message] : raise("Must declare a message for email")
     	format  = options[:format]  ? options[:format]  : "text"
